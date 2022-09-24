@@ -5,11 +5,14 @@ import Logo from "../assets/logo.svg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import userActions from "../components/store/userSlice";
 import { loginRoute } from "../utils/APIRoutes";
+import { useDispatch } from "react-redux";
 
 function Login() {
 
 	const navigate = useNavigate()
+	const dispatch = useDispatch()
 
 	const [values, setValues] = useState({
 		username: "",
@@ -24,6 +27,15 @@ function Login() {
 		pauseOnHover: true,
 		theme: "dark",
 	};
+
+
+	const updateUser = (user) => {
+		// console.log({...user})
+
+		// console.log(userActions.actions)
+
+		dispatch(userActions.actions.updateUser(user))
+	}	
 
 
   useEffect(() => {
@@ -47,6 +59,7 @@ function Login() {
 			}
 
 			if(data.status === true){
+				updateUser(data.user)
 				localStorage.setItem("chat-app-user", JSON.stringify(data.user))
 				navigate("/")
 			}
