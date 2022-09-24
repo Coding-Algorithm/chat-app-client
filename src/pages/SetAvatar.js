@@ -88,7 +88,7 @@ function SetAvatar() {
               >
                 <img
                   // src={`data:image/svg+xml;base64,${avatar}`}
-                  src={`${api}/${user.username}}${index}.svg`}
+                  src={`${api}/${Math.random() * Math.random()}${user.username}}${Math.random() * index}.svg`}
                   alt="Avatar"
                   onClick={() => setSelectedAvatar(index)}
                 />
