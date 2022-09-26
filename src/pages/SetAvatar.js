@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import Loader from "../assets/loader.gif";
+import loader from "../assets/loader.gif";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
@@ -20,7 +20,7 @@ function SetAvatar() {
   console.log(user);
 
   const updateUser = (user) => {
-    console.log("Updating User")
+    console.log("Updating User");
     dispatch(userAction.actions.updateUser(user));
   };
 
@@ -35,25 +35,44 @@ function SetAvatar() {
     theme: "dark",
   };
 
-  const setProfilePicture = async () => {};
+  const setProfilePicture = async () => {
+    if (selectedAvatar === undefined) {
+      toast.error("Please select an avatar", toastOptions);
+    } else {
+      const user = await JSON.parse(localStorage.getItem("chat-app-user"));
+      console.log(user);
+      const { data } = await axios.post(`${setAvatarRoute}/${user._id}`, {
+        image: avatars[selectedAvatar],
+      });
+
+      if (data.isSet) {
+        user.isAvatarImageSet = true;
+        user.avatarImage = data.image;
+        localStorage.setItem("chat-app-user", JSON.stringify(user));
+        navigate("/");
+      } else {
+        toast.error("Error setting avatar. Please try again", toastOptions);
+      }
+    }
+  };
 
   useEffect(() => {
     const userStored = localStorage.getItem("chat-app-user");
     if (userStored) {
-      console.log(userStored)
+      console.log(userStored);
       !user.username && updateUser(userStored);
     }
 
+    const url = `${api}/${user.username}}`;
 
-    const url = `${api}/${user.username}}.svg`;
-    
-    console.log(url)
     const fetchImage = async () => {
       try {
         const data = [];
 
         for (let i = 0; i < 4; i++) {
-          const image = await axios.get(`${url}`);
+          const image = await axios.get(
+            `${url}${i * (Math.random() * Math.random())}.svg`
+          );
 
           console.log(image);
           console.log(image, image.data);
@@ -68,35 +87,53 @@ function SetAvatar() {
     };
     user.username && fetchImage();
 
+    const calback = async () => {
+      if (!localStorage.getItem("chat-app-user")) {
+        navigate("/login");
+      }
+    };
+    calback()
   }, [user]);
 
   return (
     <>
-      <Container>
-        <div className="title-container">
-          <h1>Pick an avatar as your profile picture</h1>
-        </div>
+      {isLoading ? (
+        <Container>
+          <img src={loader} alt="loader" className="loader" />
+        </Container>
+      ) : (
+        <Container>
+          <div className="title-container">
+            <h1>Pick an avatar as your profile picture</h1>
+          </div>
 
-        <div className="avatars">
-          {avatars.map((avatar, index) => {
-            return (
-              <div
-                key={index}
-                className={`avatar ${
-                  selectedAvatar === index ? "selected" : ""
-                }`}
-              >
-                <img
-                  // src={`data:image/svg+xml;base64,${avatar}`}
-                  src={`${api}/${Math.random() * Math.random()}${user.username}}${Math.random() * index}.svg`}
-                  alt="Avatar"
-                  onClick={() => setSelectedAvatar(index)}
-                />
-              </div>
-            );
-          })}
-        </div>
-      </Container>
+          <div className="avatars">
+            {avatars.map((avatar, index) => {
+              return (
+                <div
+                  key={index}
+                  className={`avatar ${
+                    selectedAvatar === index ? "selected" : ""
+                  }`}
+                >
+                  <img
+                    src={`data:image/svg+xml;base64,${avatar}`}
+                    // src={`${api}/${Math.random() * Math.random()}${
+                    //   user.username
+                    // }}${Math.random() * index}.svg`}
+                    alt="Avatar"
+                    onClick={() => setSelectedAvatar(index)}
+                  />
+                </div>
+              );
+            })}
+          </div>
+
+          <button className="submit-btn" onClick={setProfilePicture}>
+            Set as Profile Picture
+          </button>
+        </Container>
+      )}
 
       <ToastContainer />
     </>
@@ -133,8 +170,7 @@ const Container = styled.div`
       transition: 0.5s ease-in-out;
       width: 100px;
       height: 100px;
-      background-color: "white"
-      img {
+      background-color: "white" img {
         height: 6rem;
         background-color: "white";
         transition: 0.5s ease-in-out;

@@ -14,9 +14,7 @@ const userSlice = createSlice({
       const {username, email} = stringify
       state.username = username
       state.email = email
-      
-      console.log(username, email, action.payload)
-
+    
     },
   },
 });
