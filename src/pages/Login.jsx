@@ -30,9 +30,8 @@ function Login() {
 
 
 	const updateUser = (user) => {
-		// console.log({...user})
-
-		// console.log(userActions.actions)
+		
+		user = JSON.stringify(user)
 
 		dispatch(userActions.actions.updateUser(user))
 	}	

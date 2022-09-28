@@ -2,19 +2,25 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import logo from "../assets/logo.svg";
 
-function Contacts({ contacts, currentUser }) {
+function Contacts({ contacts, currentUser, changeChat }) {
   const [currentUserName, setCurrentUserName] = useState(undefined);
   const [currentUserImage, setCurrentUserImage] = useState(undefined);
   const [currentSelected, setCurrentSelected] = useState(undefined);
 
   useEffect(() => {
+
     if (currentUser) {
       setCurrentUserImage(currentUser.avatarImage);
       setCurrentUserName(currentUser.username);
     }
   }, [currentUser]);
 
-  const changeCurrentChat = (index, contact) => {};
+  const changeCurrentChat = (index, contact) => {
+    setCurrentSelected(index);
+    changeChat(contact);
+  };
+
+  // const userSet = currentUserImage && currentUserName && true
 
   return (
     <>
@@ -29,10 +35,11 @@ function Contacts({ contacts, currentUser }) {
             {contacts.map((contact, index) => {
               return (
                 <div
-                  className={`contacts ${
+                  className={`contact ${
                     index === currentSelected ? "selected" : ""
                   }`}
-                  key={index}
+                  key ={contact._id}
+                  onClick={() => changeCurrentChat(index, contact)}
                 >
                   <div className="avatar">
                     <img
@@ -50,16 +57,16 @@ function Contacts({ contacts, currentUser }) {
           </div>
 
           <div className="current-user">
-          <div className="avatar">
-                    <img
-                      src={`data:image/svg+xml;base64,${currentUserImage}`}
-                      alt="Avatar"
-                    />
-                  </div>
+            <div className="avatar">
+              <img
+                src={`data:image/svg+xml;base64,${currentUserImage}`}
+                alt="Avatar"
+              />
+            </div>
 
-                  <div className="username">
-                    <h3>{currentUserName}</h3>
-                  </div>
+            <div className="username">
+              <h2>{currentUserName}</h2>
+            </div>
           </div>
         </Container>
       )}

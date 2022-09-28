@@ -11,6 +11,7 @@ const userSlice = createSlice({
 
       const stringify = JSON.parse(action.payload)
 
+
       const {username, email} = stringify
       state.username = username
       state.email = email
